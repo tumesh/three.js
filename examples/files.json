@@ -482,6 +482,7 @@
 		"webgpu_water",
 		"webgpu_xr_rollercoaster",
 		"webgpu_xr_cubes",
+		"PeriodicTable-Timelines",
 		"webgpu_xr_native_layers"
 	],
 	"webaudio": [
@@ -567,6 +568,7 @@
 		"css3d_molecules",
 		"css3d_orthographic",
 		"css3d_periodictable",
+		"PeriodicTable-Timelines",
 		"css3d_sandbox",
 		"css3d_sprites",
 		"css3d_youtube"
