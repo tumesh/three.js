@@ -20,7 +20,7 @@ The aim of the project is to create an easy-to-use, lightweight, cross-browser, 
 [Discord](https://discord.gg/56GBJwAnUS)
 
 
-[Demo Link ](https://tumesh.github.io/three.js/)
+[Demo Link ](https://tumesh.github.io/three.js/examples/)
 
 ### Usage
 
