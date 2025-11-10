@@ -160,6 +160,7 @@
  
             import { BoxLineGeometry } from 'three/addons/geometries/BoxLineGeometry.js';
             import { XRButton } from 'three/addons/webxr/XRButton.js';
+			import { ARButton } from 'three/addons/webxr/ARButton.js';
             import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
  
 import { VRButton } from 'three/addons/webxr/VRButton.js';
@@ -366,6 +367,7 @@ createYearsCircle(yearsCircleObjects, yearsCircleTargets, vector);
                 renderer = new CSS3DRenderer();
                 renderer.setSize( window.innerWidth, window.innerHeight );
                 document.getElementById( 'container' ).appendChild( renderer.domElement );
+document.body.appendChild( ARButton.createButton( renderer, { requiredFeatures: [ 'camera-access' ] } ) );
 
 				document.body.appendChild( XRButton.createButton( renderer ) );
                 //
