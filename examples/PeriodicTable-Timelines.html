@@ -367,9 +367,10 @@ createYearsCircle(yearsCircleObjects, yearsCircleTargets, vector);
                 renderer = new CSS3DRenderer();
                 renderer.setSize( window.innerWidth, window.innerHeight );
                 document.getElementById( 'container' ).appendChild( renderer.domElement );
-document.body.appendChild( ARButton.createButton( renderer, { requiredFeatures: [ 'camera-access' ] } ) );
+
 
 				document.body.appendChild( XRButton.createButton( renderer ) );
+				document.body.appendChild( ARButton.createButton( renderer, { requiredFeatures: [ 'camera-access' ] } ) );
                 //
 
                 controls = new TrackballControls( camera, renderer.domElement );
