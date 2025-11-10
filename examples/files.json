@@ -493,6 +493,7 @@
 	],
 	"webxr": [
 		"webxr_ar_camera_access",
+		"webxr_ar_camera_access_Mod",
 		"webxr_ar_cones",
 		"webxr_ar_hittest",
 		"webxr_ar_lighting",
