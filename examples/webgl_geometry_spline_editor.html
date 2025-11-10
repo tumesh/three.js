@@ -41,7 +41,7 @@
 			import { TransformControls } from 'three/addons/controls/TransformControls.js';
 				import { ARButton } from 'three/addons/webxr/ARButton.js';
             import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
-
+import { VRButton } from 'three/addons/webxr/VRButton.js';
 			let container;
 			let camera, scene, renderer;
 			const splineHelperObjects = [];
@@ -117,7 +117,8 @@
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				renderer.shadowMap.enabled = true;
 				container.appendChild( renderer.domElement );
-		document.body.appendChild( ARButton.createButton( renderer, { requiredFeatures: [ 'camera-access' ] } ) );
+				document.body.appendChild( VRButton.createButton( renderer ) );
+		//document.body.appendChild( ARButton.createButton( renderer, { requiredFeatures: [ 'camera-access' ] } ) );
 				const gui = new GUI();
 
 				gui.add( params, 'uniform' ).onChange( render );
