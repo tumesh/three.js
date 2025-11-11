@@ -131,7 +131,7 @@ const yearsCircleObjects = [];
 				const boxGeometry = new THREE.BoxGeometry( 1, 1, Math.cos(angleYear) * radiusYear + Math.cos(angleMonth) * radiusMonth);
 				const boxMaterial = new THREE.MeshStandardMaterial();
 				cubeobj = new THREE.Mesh( boxGeometry, boxMaterial );
-				cubeobj.position.z = - Math.sin(angleMonth) * radiusMonth;;
+				cubeobj.position.z = - Math.sin(angleMonth) * angleYear;
 scene.add( cubeobj );
           //  const object = new THREE.Object3D();
           //  object.position.x = Math.cos(angleYear) * radiusYear + Math.cos(angleMonth) * radiusMonth;
