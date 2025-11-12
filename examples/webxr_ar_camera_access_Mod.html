@@ -93,10 +93,11 @@ const yearsCircleObjects = [];
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const startYear = 1970;
     const yearsCount = 100;
-   
+   let i = 0;
 
     for (let year = startYear; year < (yearsCount + startYear); year++) {
         for (let m = 0; m < 12; m++) {
+			i++;
             const element = document.createElement('div');
             console.log(year );
             if (year < 1981 ) {
@@ -138,9 +139,15 @@ scene.add( cubeobj );
                 const boxMaterial = new THREE.MeshStandardMaterial();
                 cubeobj = new THREE.Mesh( boxGeometry, boxMaterial );
 				// distribute by year (angleYear) and month (angleMonth)
-                cubeobj.position.x =  parseFloat( Math.cos( angleYear ) * radiusYear + Math.cos( angleMonth ) * radiusMonth);
-                cubeobj.position.y =  parseFloat(Math.sin( angleYear ) * radiusYear + Math.sin( angleMonth ) * radiusMonth);
-                cubeobj.position.z =  parseFloat(Math.sin( angleMonth ) * radiusMonth);
+
+				    const theta = i * 0.175 + Math.PI;
+                    const y = - ( i * 4 ) + 250;
+
+
+					cubeobj.position.setFromCylindricalCoords( 600, theta, y );
+               // cubeobj.position.x =  parseFloat( Math.cos( angleYear ) * radiusYear + Math.cos( angleMonth ) * radiusMonth);
+               // cubeobj.position.y =  parseFloat(Math.sin( angleYear ) * radiusYear + Math.sin( angleMonth ) * radiusMonth);
+               // cubeobj.position.z =  parseFloat(Math.sin( angleMonth ) * radiusMonth);
 +			
 // add a text label (month + year) as a canvas texture on the cube
                 (function addLabelToMesh( mesh, text ) {
