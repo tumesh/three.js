@@ -127,12 +127,29 @@ const yearsCircleObjects = [];
             const radiusYear = 1800;
             const radiusMonth = 350;
 
-
+/*
 				const boxGeometry = new THREE.BoxGeometry( 1, 1, Math.cos(angleYear) * radiusYear + Math.cos(angleMonth) * radiusMonth);
 				const boxMaterial = new THREE.MeshStandardMaterial();
 				cubeobj = new THREE.Mesh( boxGeometry, boxMaterial );
 				cubeobj.position.z = - Math.sin(angleMonth) * angleYear;
 scene.add( cubeobj );
+*/
+ const boxGeometry = new THREE.BoxGeometry( 1, 1, Math.cos(angleYear) * radiusYear + Math.cos(angleMonth) * radiusMonth);
+                const boxMaterial = new THREE.MeshStandardMaterial();
+                cubeobj = new THREE.Mesh( boxGeometry, boxMaterial );
+-				//cubeobj.position.z = - Math.sin(angleMonth) * angleYear;
+-				//scene.add( cubeobj );
++				// distribute by year (angleYear) around X/Y, and by month (angleMonth) for radial offset / Z
++				cubeobj.position.x = Math.cos( angleYear ) * radiusYear + Math.cos( angleMonth ) * radiusMonth;
++				cubeobj.position.y = Math.sin( angleYear ) * radiusYear + Math.sin( angleMonth ) * radiusMonth;
++				cubeobj.position.z = Math.sin( angleMonth ) * radiusMonth;
++
++				// small visual tweaks
++				cubeobj.scale.setScalar( 0.02 ); // scale down large radius values to scene units
++			//	cubeobj.userData = { year: year, month: m };
++
++				scene.add( cubeobj );
+
           //  const object = new THREE.Object3D();
           //  object.position.x = Math.cos(angleYear) * radiusYear + Math.cos(angleMonth) * radiusMonth;
           //  object.position.y = Math.sin(angleYear) * radiusYear + Math.sin(angleMonth) * radiusMonth;
