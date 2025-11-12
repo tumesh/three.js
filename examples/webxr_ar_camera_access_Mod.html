@@ -69,7 +69,7 @@ const yearsCircleObjects = [];
 				cube = new THREE.Mesh( boxGeometry, boxMaterial );
 				cube.position.z = - 3;
 
-				scene.add( cube );
+				//scene.add( cube );
 
 				createYearsCircle(yearsCircleObjects, yearsCircleTargets, scene);
 
@@ -144,12 +144,16 @@ scene.add( cubeobj );
                     const y = - ( i * 4 ) + 250;
 
 
-					cubeobj.position.setFromCylindricalCoords( 600, theta, y );
+					//cubeobj.position.setFromCylindricalCoords( , theta, y );
                // cubeobj.position.x =  parseFloat( Math.cos( angleYear ) * radiusYear + Math.cos( angleMonth ) * radiusMonth);
                // cubeobj.position.y =  parseFloat(Math.sin( angleYear ) * radiusYear + Math.sin( angleMonth ) * radiusMonth);
                // cubeobj.position.z =  parseFloat(Math.sin( angleMonth ) * radiusMonth);
-+			
-// add a text label (month + year) as a canvas texture on the cube
+
+			   cubeobj.position.x = cubeobj.position.x * 600;
+                    cubeobj.position.y = y;
+                    cubeobj.position.z = theta;
+
+				// add a text label (month + year) as a canvas texture on the cube
                 (function addLabelToMesh( mesh, text ) {
                     const canvas = document.createElement( 'canvas' );
                     canvas.width = 256;
