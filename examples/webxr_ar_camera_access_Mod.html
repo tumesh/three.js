@@ -137,15 +137,11 @@ scene.add( cubeobj );
  				const boxGeometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );
                 const boxMaterial = new THREE.MeshStandardMaterial();
                 cubeobj = new THREE.Mesh( boxGeometry, boxMaterial );
-				
-+				cubeobj.position.x = (Math.cos( angleYear ) * radiusYear + Math.cos( angleMonth ) * radiusMonth);
-+				cubeobj.position.y = (Math.sin( angleYear ) * radiusYear + Math.sin( angleMonth ) * radiusMonth);
-+				cubeobj.position.z = (Math.sin( angleMonth ) * radiusMonth);
-+
-+				// small visual tweaks
-+				cubeobj.scale.setScalar( 0.02 ); // scale down large radius values to scene units
-+			//	cubeobj.userData = { year: year, month: m };
-+
+				// distribute by year (angleYear) and month (angleMonth)
+                cubeobj.position.x =  parseFloat( Math.cos( angleYear ) * radiusYear + Math.cos( angleMonth ) * radiusMonth);
+                cubeobj.position.y =  parseFloat(Math.sin( angleYear ) * radiusYear + Math.sin( angleMonth ) * radiusMonth);
+                cubeobj.position.z =  parseFloat(Math.sin( angleMonth ) * radiusMonth);
++			
 // add a text label (month + year) as a canvas texture on the cube
                 (function addLabelToMesh( mesh, text ) {
                     const canvas = document.createElement( 'canvas' );
@@ -170,6 +166,11 @@ scene.add( cubeobj );
                     mesh.material.needsUpdate = true;
                 })( cubeobj, months[m] + ' ' + year );
 
+
+					// small visual tweaks
++				cubeobj.scale.setScalar( 0.02 ); // scale down large radius values to scene units
++			//	cubeobj.userData = { year: year, month: m };
++
 				scene.add( cubeobj );
 
  
