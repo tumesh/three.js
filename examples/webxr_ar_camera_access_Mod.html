@@ -134,26 +134,44 @@ const yearsCircleObjects = [];
 				cubeobj.position.z = - Math.sin(angleMonth) * angleYear;
 scene.add( cubeobj );
 */
- const boxGeometry = new new THREE.BoxGeometry( 1, 1, 1 );
+ 				const boxGeometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );
                 const boxMaterial = new THREE.MeshStandardMaterial();
                 cubeobj = new THREE.Mesh( boxGeometry, boxMaterial );
--				//cubeobj.position.z = - Math.sin(angleMonth) * angleYear;
--				//scene.add( cubeobj );
-+				// distribute by year (angleYear) around X/Y, and by month (angleMonth) for radial offset / Z
-+				cubeobj.position.x = Math.cos( angleYear ) * radiusYear + Math.cos( angleMonth ) * radiusMonth;
-+				cubeobj.position.y = Math.sin( angleYear ) * radiusYear + Math.sin( angleMonth ) * radiusMonth;
-+				cubeobj.position.z = Math.sin( angleMonth ) * radiusMonth;
+				
++				cubeobj.position.x = (Math.cos( angleYear ) * radiusYear + Math.cos( angleMonth ) * radiusMonth);
++				cubeobj.position.y = (Math.sin( angleYear ) * radiusYear + Math.sin( angleMonth ) * radiusMonth);
++				cubeobj.position.z = (Math.sin( angleMonth ) * radiusMonth);
 +
 +				// small visual tweaks
 +				cubeobj.scale.setScalar( 0.02 ); // scale down large radius values to scene units
 +			//	cubeobj.userData = { year: year, month: m };
 +
-+				scene.add( cubeobj );
+// add a text label (month + year) as a canvas texture on the cube
+                (function addLabelToMesh( mesh, text ) {
+                    const canvas = document.createElement( 'canvas' );
+                    canvas.width = 256;
+                    canvas.height = 128;
+                    const ctx = canvas.getContext( '2d' );
+                    // clear / background
+                    ctx.clearRect( 0, 0, canvas.width, canvas.height );
+                    // optional semi-transparent background for readability
+                    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+                    ctx.fillRect( 0, 0, canvas.width, canvas.height );
+                    // text style
+                    ctx.fillStyle = '#000';
+                    ctx.font = '36px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText( text, canvas.width / 2, canvas.height / 2 );
+                    const texture = new THREE.CanvasTexture( canvas );
+                    texture.needsUpdate = true;
+                    mesh.material.map = texture;
+                    mesh.material.transparent = true;
+                    mesh.material.needsUpdate = true;
+                })( cubeobj, months[m] + ' ' + year );
 
-          //  const object = new THREE.Object3D();
-          //  object.position.x = Math.cos(angleYear) * radiusYear + Math.cos(angleMonth) * radiusMonth;
-          //  object.position.y = Math.sin(angleYear) * radiusYear + Math.sin(angleMonth) * radiusMonth;
-          //  object.position.z = Math.sin(angleMonth) * radiusMonth;
+				scene.add( cubeobj );
+
  
         }
     }
