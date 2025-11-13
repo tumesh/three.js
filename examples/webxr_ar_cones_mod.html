@@ -105,11 +105,12 @@ createYearsCircle(yearsCircleObjects, yearsCircleTargets, scene);
 			const y = - ( i * 4 ) + 250;
 			//mesh.position.set(i, y, theta ).applyMatrix4( controller.matrixWorld );
 			// Correct: Translate the geometry to shift its center point
-			geometry.translate(i,y, theta);
-			var material = new THREE.MeshBasicMaterial( { color: 0xffffff * Math.random() } );
+			//geometry.translate(i,y, theta);
+				geometry.translate( 0.5, 0.5, 0.5 );
+			var material = new THREE.MeshNormalMaterial( { color: 0xffffff * Math.random() } );
 			const mesh = new THREE.Mesh( geometry, material );
 			//mesh.position.set( 0, 0, - 0.3 ).applyMatrix4( controller.matrixWorld );
-			mesh.position.set( i, y, theta );
+			//mesh.position.set( i, y, theta );
 
 			//mesh.quaternion.setFromRotationMatrix( controller.matrixWorld );
 			scene.add( mesh );
