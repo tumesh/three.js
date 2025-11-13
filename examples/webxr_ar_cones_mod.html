@@ -41,11 +41,11 @@ const yearsCircleObjects = [];
 				scene = new THREE.Scene();
 
 				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 20 );
-
+   				camera.position.z = 4;
 				const light = new THREE.HemisphereLight( 0xffffff, 0xbbbbff, 3 );
 				light.position.set( 0.5, 1, 0.25 );
 				scene.add( light );
-
+				scene.add( new THREE.AxesHelper( 2 ) );
 				//
 
 				renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
@@ -100,16 +100,15 @@ createYearsCircle(yearsCircleObjects, yearsCircleTargets, scene);
              
             const angleYear = ((Math.abs(year-startYear)) / yearsCount) * Math.PI * 2;
             const angleMonth = (m / 12) * Math.PI * 2;
-           var boxGeometry   = new THREE.BoxGeometry(); //= new THREE.BoxGeometry( 1, 1, 1 )
-			var material = new THREE.MeshBasicMaterial( { color: 0xffffff * Math.random() } );
-			const mesh = new THREE.Mesh( boxGeometry, material );
-			//mesh.position.set( 0, 0, - 0.3 ).applyMatrix4( controller.matrixWorld );
-
+            var geometry = new THREE.BoxBufferGeometry();
 			const theta = i * 0.175 + Math.PI;
 			const y = - ( i * 4 ) + 250;
 			//mesh.position.set(i, y, theta ).applyMatrix4( controller.matrixWorld );
 			// Correct: Translate the geometry to shift its center point
-			boxGeometry.translate(i,y, theta);
+			geometry.translate(i,y, theta);
+			var material = new THREE.MeshBasicMaterial( { color: 0xffffff * Math.random() } );
+			const mesh = new THREE.Mesh( geometry, material );
+			//mesh.position.set( 0, 0, - 0.3 ).applyMatrix4( controller.matrixWorld );
 			mesh.position.set( i, y, theta );
 
 			//mesh.quaternion.setFromRotationMatrix( controller.matrixWorld );
