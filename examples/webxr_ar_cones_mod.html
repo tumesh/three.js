@@ -107,10 +107,11 @@ createYearsCircle(yearsCircleObjects, yearsCircleTargets, scene);
 			const y = - ( i * 4 ) + 250;
 			const geometry = new THREE.CylinderGeometry( 0, 0.05, 0.2, 32 ).rotateX( Math.PI / 2 );
 			const material = new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } );
-					const mesh = new THREE.Mesh( geometry, material );
-					mesh.position.set( 0, i, - 0.3 ).applyMatrix4( controller.matrixWorld );
-					mesh.quaternion.setFromRotationMatrix( controller.matrixWorld );
-					scene.add( mesh );
+					
+			const mesh = new THREE.Mesh( geometry, material );
+			mesh.position.set( m, i, - 0.3 ).applyMatrix4( controller.matrixWorld );
+			mesh.quaternion.setFromRotationMatrix( controller.matrixWorld );
+			scene.add( mesh );
 		
 		scene.add( new THREE.AxesHelper( 2 ) );
         }
