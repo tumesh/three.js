@@ -65,7 +65,7 @@ const yearsCircleObjects = [];
 
 				const geometry = new THREE.CylinderGeometry( 0, 0.05, 0.2, 32 ).rotateX( Math.PI / 2 );
 
-createYearsCircle(yearsCircleObjects, yearsCircleTargets, scene);
+
 
 
 				function onSelect() {
@@ -81,7 +81,7 @@ createYearsCircle(yearsCircleObjects, yearsCircleTargets, scene);
 				controller = renderer.xr.getController( 0 );
 				controller.addEventListener( 'select', onSelect );
 				scene.add( controller );
-
+createYearsCircle(yearsCircleObjects, yearsCircleTargets, scene);
 				//
 
 				window.addEventListener( 'resize', onWindowResize );
