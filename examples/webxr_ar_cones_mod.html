@@ -5,6 +5,8 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 		<link type="text/css" rel="stylesheet" href="main.css">
+		<script src="https://cdn.jsdelivr.net/npm/three@0.116.1/build/three.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.116.1/examples/js/controls/OrbitControls.js"></script>
 	</head>
 	<body>
 
@@ -103,16 +105,11 @@ createYearsCircle(yearsCircleObjects, yearsCircleTargets, scene);
              
 			const theta = i * 0.175 + Math.PI;
 			const y = - ( i * 4 ) + 250;
-			//mesh.position.set(i, y, theta ).applyMatrix4( controller.matrixWorld );
-			// Correct: Translate the geometry to shift its center point
-			//geometry.translate(i,y, theta);
-			var geometry = new THREE.BoxBufferGeometry();
-		geometry.translate( 0.5, 0.5, i );
-    
-		var material = new THREE.MeshNormalMaterial();
-
-    var mesh = new THREE.Mesh( geometry, material );
-    scene.add( mesh );
+			const material = new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } );
+					const mesh = new THREE.Mesh( geometry, material );
+					mesh.position.set( 0, i, - 0.3 ).applyMatrix4( controller.matrixWorld );
+					mesh.quaternion.setFromRotationMatrix( controller.matrixWorld );
+					scene.add( mesh );
 		
 		scene.add( new THREE.AxesHelper( 2 ) );
         }
