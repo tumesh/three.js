@@ -118,28 +118,34 @@ createYearsCircle(yearsCircleObjects, yearsCircleTargets, scene);
 			return sprite;
 		}
 
-		const columns = 12; // months across
-		const rows = yearsCount; // years down
-		const spacingX = 0.35; // horizontal spacing between months
-		const spacingZ = 0.35; // vertical spacing between years
+		const columns = 12; // months around each ring
+		const rows = yearsCount; // number of rings (years)
+		const baseRadius = 0.3; // starting radius for first year
+		const radiusStep = 0.2; // how much radius increases per year
+		const heightStep = 0.25; // vertical spacing between years
 
 		const coneGeometry = new THREE.CylinderGeometry( 0, 0.05, 0.18, 32 ).rotateX( Math.PI / 2 );
 
+		// cylindrical coordinates: each year is a concentric ring, months around the ring
 		for (let yi = 0; yi < rows; yi++) {
 			const year = startYear + yi;
+			const radius = baseRadius + yi * radiusStep; // expand radius per year
+			const y = yi * heightStep; // elevate height per year
+
 			for (let m = 0; m < columns; m++) {
 				const month = months[m];
 
-				// grid coordinates: center months around X=0, center years around Z=0
-				const x = (m - (columns - 1) / 2) * spacingX;
-				const z = (yi - (rows - 1) / 2) * spacingZ;
-				// elevate each item upward (shelf stacking): each year level gets its own height
-				const y = yi * 0.25;
+				// angular position around the ring (months distributed 360°)
+				const angle = (m / columns) * Math.PI * 2;
+				
+				// convert cylindrical to cartesian: (radius, angle, height) -> (x, y, z)
+				const x = radius * Math.cos(angle);
+				const z = radius * Math.sin(angle);
 
 				const material = new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } );
 				const mesh = new THREE.Mesh( coneGeometry, material );
 				mesh.position.set( x, y, z );
-				// apply controller transform so grid appears relative to AR origin
+				// apply controller transform so cylinder appears relative to AR origin
 				if (controller && controller.matrixWorld) {
 					mesh.position.applyMatrix4( controller.matrixWorld );
 					mesh.quaternion.setFromRotationMatrix( controller.matrixWorld );
@@ -147,8 +153,8 @@ createYearsCircle(yearsCircleObjects, yearsCircleTargets, scene);
 				scene.add( mesh );
 
 				// label above each cone: "YEAR MON"
-				const label = makeTextSprite( year + ' ' + month, { fontsize:8, backgroundColor: 'rgba(0,0,0,0.6)', color: 'white' } );
-				label.position.set( x, y + 0.014, z );
+				const label = makeTextSprite( year + ' ' + month, { fontsize: 8, backgroundColor: 'rgba(0,0,0,0.6)', color: 'white' } );
+				label.position.set( x, y + 0.14, z );
 				if (controller && controller.matrixWorld) label.position.applyMatrix4( controller.matrixWorld );
 				label.scale.set( 0.25, 0.12, 1 );
 				scene.add( label );
