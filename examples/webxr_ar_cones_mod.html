@@ -255,7 +255,7 @@ function setCameraTexture() {
 		// create objects: each year is a concentric ring, months around the ring
 		for (let yi = 0; yi < rows; yi++) {
 			const year = startYear + yi;
-			const radius = baseRadius + yi * radiusStep; // expand radius per year away from origin
+			const radius = baseRadius  * radiusStep; // expand radius per year away from origin
 			const baseY = baseHeight + yi * heightStep; // base vertical position for this ring going upward
 
 			for (let m = 0; m < columns; m++) {
