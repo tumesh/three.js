@@ -204,8 +204,8 @@ function setCameraTexture() {
 			}
 	function createYearsCircle(yearsCircleObjects, yearsCircleTargets, vector) {
 		const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-		const startYear = 1970;
-		const yearsCount = 100;
+		const startYear = 1980;
+		const yearsCount = 50;
 
 		// helper to create readable label sprites from canvas
 		function makeTextSprite(message, parameters) {
@@ -237,7 +237,7 @@ function setCameraTexture() {
 		const baseRadius = 2.3; // starting radius for first year
 		const radiusStep = 0.3; // how much radius increases per year
 		const heightStep = 0.515; // vertical spacing between years
-		const baseHeight = -2.0; // start the rings this many meters below origin
+		const baseHeight = -12.0; // start the rings this many meters below origin
 
 		// helper: create a random primitive mesh
 		function createRandomMesh() {
