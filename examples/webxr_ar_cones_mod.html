@@ -303,7 +303,7 @@ function setCameraTexture() {
 				setCameraTexture();
 
 				const t = clock.getElapsedTime();
-
+/*
 				// animate created objects: slow rotation and subtle bobbing
 				for ( let i = 0; i < yearsCircleObjects.length; i++ ) {
 					const obj = yearsCircleObjects[ i ];
@@ -319,7 +319,7 @@ function setCameraTexture() {
 					const controllerPos = new THREE.Vector3().setFromMatrixPosition( controller.matrixWorld );
 					if ( controller.userData.offset ) controllerPos.add( controller.userData.offset );
 					sel.position.copy( controllerPos );
-				}
+				} */
 				renderer.render( scene, camera );
 
 			}
