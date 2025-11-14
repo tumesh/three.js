@@ -27,9 +27,12 @@
 
 			import * as THREE from 'three';
 			import { ARButton } from 'three/addons/webxr/ARButton.js';
-
+	const clock = new THREE.Clock();
 			let camera, scene, renderer;
-			let controller;
+			let controller, controller2;
+
+			let raycaster, pointer, dragPlane, selectedObject = null, offset = new THREE.Vector3();
+			 
 const yearsCircleObjects = [];
             const yearsCircleTargets = { table: [], sphere: [], helix: [], grid: [] };
 			const vector = new THREE.Vector3();
@@ -67,6 +70,71 @@ const yearsCircleObjects = [];
 
 
 
+			function getIntersectionsPointer(clientX, clientY) {
+				const rect = renderer.domElement.getBoundingClientRect();
+				pointer.x = ( ( clientX - rect.left ) / rect.width ) * 2 - 1;
+				pointer.y = - ( ( clientY - rect.top ) / rect.height ) * 2 + 1;
+				raycaster.setFromCamera( pointer, camera );
+				return raycaster.intersectObjects( scene.children, true );
+			}
+
+			function onPointerDown( event ) {
+				event.preventDefault();
+				const intersects = getIntersectionsPointer( event.clientX, event.clientY );
+				if ( intersects.length > 0 ) {
+					selectedObject = intersects[ 0 ].object;
+					// setup drag plane
+					dragPlane.setFromNormalAndCoplanarPoint( camera.getWorldDirection( new THREE.Vector3() ).clone().negate(), intersects[0].point );
+					// compute offset between intersection point and object position
+					offset.copy( intersects[0].point ).sub( selectedObject.position );
+					// optional visual feedback
+					if ( selectedObject.material && selectedObject.material.emissive ) selectedObject.material.emissive.setHex( 0x444444 );
+				}
+			}
+
+			function onPointerMove( event ) {
+				if ( ! selectedObject ) return;
+				event.preventDefault();
+				const rect = renderer.domElement.getBoundingClientRect();
+				pointer.x = ( ( event.clientX - rect.left ) / rect.width ) * 2 - 1;
+				pointer.y = - ( ( event.clientY - rect.top ) / rect.height ) * 2 + 1;
+				raycaster.setFromCamera( pointer, camera );
+				const intersectionPoint = new THREE.Vector3();
+				raycaster.ray.intersectPlane( dragPlane, intersectionPoint );
+				if ( intersectionPoint ) {
+					selectedObject.position.copy( intersectionPoint.sub( offset ) );
+				}
+			}
+
+			function onPointerUp( /* event */ ) {
+				if ( selectedObject ) {
+					if ( selectedObject.material && selectedObject.material.emissive ) selectedObject.material.emissive.setHex( 0x000000 );
+					selectedObject = null;
+				}
+			}
+
+			function onSelectStart( event ) {
+				// controller select: raycast from controller to pick object
+				const tempMatrix = new THREE.Matrix4();
+				tempMatrix.identity().extractRotation( controller.matrixWorld );
+				raycaster.ray.origin.setFromMatrixPosition( controller.matrixWorld );
+				raycaster.ray.direction.set( 0, 0, -1 ).applyMatrix4( tempMatrix );
+				const intersects = raycaster.intersectObjects( scene.children, true );
+				if ( intersects.length > 0 ) {
+					controller.userData.selected = intersects[ 0 ].object;
+					// attach selected to controller by recording offset
+					const worldPos = new THREE.Vector3();
+					intersects[0].object.getWorldPosition( worldPos );
+					controller.userData.offset = worldPos.sub( new THREE.Vector3().setFromMatrixPosition( controller.matrixWorld ) );
+				}
+			}
+
+			function onSelectEnd( /* event */ ) {
+				if ( controller.userData.selected ) {
+					controller.userData.selected = undefined;
+					controller.userData.offset = undefined;
+				}
+			}
 
 				function onSelect() {
 
@@ -81,13 +149,59 @@ const yearsCircleObjects = [];
 				controller = renderer.xr.getController( 0 );
 				controller.addEventListener( 'select', onSelect );
 				scene.add( controller );
+
+
+				controller2 = renderer.xr.getController( 1 );
+				controller2.addEventListener( 'select', onSelect );
+				scene.add( controller2 );
 createYearsCircle(yearsCircleObjects, yearsCircleTargets, scene);
 				//
 
+
+				// interaction helpers
+				raycaster = new THREE.Raycaster();
+				pointer = new THREE.Vector2();
+				dragPlane = new THREE.Plane();
+
+				// XR controller for AR grabbing
+				controller = renderer.xr.getController( 0 );
+				controller.addEventListener( 'selectstart', onSelectStart );
+				controller.addEventListener( 'selectend', onSelectEnd );
+				scene.add( controller );
+
+				// Pointer events for desktop testing (mouse/touch)
+				renderer.domElement.addEventListener( 'pointerdown', onPointerDown );
+				renderer.domElement.addEventListener( 'pointermove', onPointerMove );
+				renderer.domElement.addEventListener( 'pointerup', onPointerUp );
 				window.addEventListener( 'resize', onWindowResize );
 
 			}
+function setCameraTexture() {
 
+				if ( ! renderer.xr.getSession() ) {
+
+					 
+
+					return;
+
+				}
+
+				const frame = renderer.xr.getFrame();
+				const referenceSpace = renderer.xr.getReferenceSpace();
+
+				if ( ! frame || ! referenceSpace ) return;
+
+				const viewerPose = frame.getViewerPose( referenceSpace );
+
+				if ( ! viewerPose ) return;
+
+				const view = viewerPose.views.find( view => view.camera );
+			
+				const cameraTexture = renderer.xr.getCameraTexture( view.camera );
+
+				 
+			
+			}
 	function createYearsCircle(yearsCircleObjects, yearsCircleTargets, vector) {
 		const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 		const startYear = 1970;
@@ -97,7 +211,7 @@ createYearsCircle(yearsCircleObjects, yearsCircleTargets, scene);
 		function makeTextSprite(message, parameters) {
 			parameters = parameters || {};
 			const fontface = parameters.fontface || 'Arial';
-			const fontsize = parameters.fontsize || 24;
+			const fontsize = parameters.fontsize || 10;
 			const padding = parameters.padding || 6;
 			const canvas = document.createElement('canvas');
 			const context = canvas.getContext('2d');
@@ -120,44 +234,52 @@ createYearsCircle(yearsCircleObjects, yearsCircleTargets, scene);
 
 		const columns = 12; // months around each ring
 		const rows = yearsCount; // number of rings (years)
-		const baseRadius = 0.3; // starting radius for first year
-		const radiusStep = 0.2; // how much radius increases per year
-		const heightStep = 0.25; // vertical spacing between years
+		const baseRadius = 2.3; // starting radius for first year
+		const radiusStep = 0.3; // how much radius increases per year
+		const heightStep = 0.515; // vertical spacing between years
+		const baseHeight = -2.0; // start the rings this many meters below origin
 
-		const coneGeometry = new THREE.CylinderGeometry( 0, 0.05, 0.18, 32 ).rotateX( Math.PI / 2 );
+		// helper: create a random primitive mesh
+		function createRandomMesh() {
+			const type = Math.floor( Math.random() * 6 );
+			switch ( type ) {
+				case 0: return new THREE.Mesh( new THREE.BoxGeometry( 0.12, 0.12, 0.12 ), new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } ) );
+				case 1: return new THREE.Mesh( new THREE.SphereGeometry( 0.08 + Math.random() * 0.08, 16, 12 ), new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } ) );
+				case 2: return new THREE.Mesh( new THREE.ConeGeometry( 0.06 + Math.random() * 0.06, 0.16, 16 ), new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } ) );
+				case 3: return new THREE.Mesh( new THREE.TorusGeometry( 0.06 + Math.random() * 0.06, 0.02, 8, 32 ), new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } ) );
+				case 4: return new THREE.Mesh( new THREE.CylinderGeometry( 0.03, 0.03, 0.14, 16 ), new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } ) );
+				default: return new THREE.Mesh( new THREE.OctahedronGeometry( 0.08 + Math.random() * 0.06 ), new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } ) );
+			}
+		}
 
-		// cylindrical coordinates: each year is a concentric ring, months around the ring
+		// create objects: each year is a concentric ring, months around the ring
 		for (let yi = 0; yi < rows; yi++) {
 			const year = startYear + yi;
-			const radius = baseRadius + yi * radiusStep; // expand radius per year
-			const y = yi * heightStep; // elevate height per year
+			const radius = baseRadius  * radiusStep; // expand radius per year + yi
+			const baseY = baseHeight + yi * heightStep; // base vertical position for this ring
 
 			for (let m = 0; m < columns; m++) {
 				const month = months[m];
-
-				// angular position around the ring (months distributed 360°)
 				const angle = (m / columns) * Math.PI * 2;
-				
-				// convert cylindrical to cartesian: (radius, angle, height) -> (x, y, z)
 				const x = radius * Math.cos(angle);
 				const z = radius * Math.sin(angle);
 
-				const material = new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } );
-				const mesh = new THREE.Mesh( coneGeometry, material );
-				mesh.position.set( x, y, z );
-				// apply controller transform so cylinder appears relative to AR origin
-				if (controller && controller.matrixWorld) {
-					mesh.position.applyMatrix4( controller.matrixWorld );
-					mesh.quaternion.setFromRotationMatrix( controller.matrixWorld );
-				}
-				scene.add( mesh );
+				// group so label and mesh move/animate together
+				const group = new THREE.Group();
+				const mesh = createRandomMesh();
+				// center mesh in group
+				mesh.position.set(0, 0, 0);
+				group.add( mesh );
 
-				// label above each cone: "YEAR MON"
-				const label = makeTextSprite( year + ' ' + month, { fontsize: 8, backgroundColor: 'rgba(0,0,0,0.6)', color: 'white' } );
-				label.position.set( x, y + 0.14, z );
-				if (controller && controller.matrixWorld) label.position.applyMatrix4( controller.matrixWorld );
+				const label = makeTextSprite( year + ' ' + month, { fontsize: 10, backgroundColor: 'rgba(0,0,0,0.6)', color: 'white' } );
+				label.position.set( 0, 0.14, 0 );
 				label.scale.set( 0.25, 0.12, 1 );
-				scene.add( label );
+				group.add( label );
+
+				group.position.set( x, baseY, z );
+				group.userData = { baseY: baseY, index: yearsCircleObjects.length };
+				scene.add( group );
+				yearsCircleObjects.push( group );
 			}
 		}
 	}
@@ -175,6 +297,29 @@ createYearsCircle(yearsCircleObjects, yearsCircleTargets, scene);
 
 			function animate() {
 
+
+				const delta = clock.getDelta();
+
+				setCameraTexture();
+
+				const t = clock.getElapsedTime();
+
+				// animate created objects: slow rotation and subtle bobbing
+				for ( let i = 0; i < yearsCircleObjects.length; i++ ) {
+					const obj = yearsCircleObjects[ i ];
+					obj.rotation.y += delta * 0.25;
+					if ( obj.userData && typeof obj.userData.baseY === 'number' ) {
+						obj.position.y = obj.userData.baseY + Math.sin( t * 1.5 + obj.userData.index * 0.3 ) * 0.05;
+					}
+				}
+
+	// if controller is holding an object, move it with controller
+				if ( controller && controller.userData && controller.userData.selected ) {
+					const sel = controller.userData.selected;
+					const controllerPos = new THREE.Vector3().setFromMatrixPosition( controller.matrixWorld );
+					if ( controller.userData.offset ) controllerPos.add( controller.userData.offset );
+					sel.position.copy( controllerPos );
+				}
 				renderer.render( scene, camera );
 
 			}
