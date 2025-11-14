@@ -42,7 +42,7 @@
 			import * as THREE from 'three';
 			import { ARButton } from 'three/addons/webxr/ARButton.js';
 
-			import Stats from 'three/addons/libs/stats.module.js';
+			import { Stats } from 'three/addons/libs/stats.module.js';
  
 			let pointclouds;
 		 
@@ -268,7 +268,7 @@ function generatePointCloudGeometry( color, width, length ) {
 				camera.applyMatrix4( rotateY );
 				camera.updateMatrixWorld();
 
-				raycaster.setFromCamera( pointer, camera );
+				//raycaster.setFromCamera( pointer, camera );
 
 				const intersections = raycaster.intersectObjects( pointclouds, false );
 				intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
