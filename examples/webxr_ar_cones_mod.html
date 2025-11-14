@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js ar - cones</title>
+		<title>UMESH1-three.js ar - cones</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 		<link type="text/css" rel="stylesheet" href="main.css">
@@ -234,10 +234,10 @@ function setCameraTexture() {
 
 		const columns = 12; // months around each ring
 		const rows = yearsCount; // number of rings (years)
-		const baseRadius = 2.3; // starting radius for first year
-		const radiusStep = 0.3; // how much radius increases per year
-		const heightStep = 0.515; // vertical spacing between years
-		const baseHeight = -2.0; // start the rings this many meters below origin
+		const baseRadius = 0.5; // starting radius for first year (inner circle)
+		const radiusStep = 0.08; // how much radius increases per year
+		const heightStep = 0.04; // vertical spacing between years (upward)
+		const baseHeight = 0.0; // start the rings at origin
 
 		// helper: create a random primitive mesh
 		function createRandomMesh() {
@@ -255,8 +255,8 @@ function setCameraTexture() {
 		// create objects: each year is a concentric ring, months around the ring
 		for (let yi = 0; yi < rows; yi++) {
 			const year = startYear + yi;
-			const radius = baseRadius  * radiusStep; // expand radius per year + yi
-			const baseY = baseHeight + yi * heightStep; // base vertical position for this ring
+			const radius = baseRadius + yi * radiusStep; // expand radius per year away from origin
+			const baseY = baseHeight + yi * heightStep; // base vertical position for this ring going upward
 
 			for (let m = 0; m < columns; m++) {
 				const month = months[m];
