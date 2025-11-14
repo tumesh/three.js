@@ -263,7 +263,7 @@ function setCameraTexture() {
 				const month = months[m];
 				const angle = (m / columns) * Math.PI * 2;
 				const x = radius  * Math.cos(angle);
-				const z = radius + m * Math.sin(angle);
+				const z = radius  * Math.sin(angle);
 
 				// group so label and mesh move/animate together
 				const group = new THREE.Group();
